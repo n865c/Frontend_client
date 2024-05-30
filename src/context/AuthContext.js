@@ -14,17 +14,29 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const register = async (userData) => {
-    const res = await axios.post('/api/auth/register', userData);
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('user', JSON.stringify(res.data.user));
-    setUser(res.data.user);
+    try {
+      const res = await axios.post(process.env.REACT_APP_BACKEND_URL + '/api/auth/register', JSON.stringify(userData), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
+    } catch (error) {
+      console.error('Registration error:', error.response.data);
+    }
   };
 
   const login = async (userData) => {
-    const res = await axios.post('/api/auth/login', userData);
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('user', JSON.stringify(res.data.user));
-    setUser(res.data.user);
+    try {
+      const res = await axios.post(process.env.REACT_APP_BACKEND_URL + '/api/auth/login', JSON.stringify(userData), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
+    } catch (error) {
+      console.error('Login error:', error.response.data);
+    }
   };
 
   const logout = () => {
@@ -33,8 +45,10 @@ const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const isAuthenticated = !!user;
+
   return (
-    <AuthContext.Provider value={{ user, register, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
